@@ -1,15 +1,18 @@
 from flask import Flask
+from .extensions import oauth
 
 def create_app():
-    app = Flask(
-        __name__,
-        template_folder="../templates"  # 👈 CLAVE
-    )
-    
+    app = Flask(__name__, template_folder="../templates")
+    app.secret_key = "super-secret"
+
+    oauth.init_app(app)
+
+    app.config.update(
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=False
+)
 
     from .routes_auth import auth
     app.register_blueprint(auth)
-    
-    from .routes_microsoft import microsoft
-    app.register_blueprint(microsoft)
+
     return app

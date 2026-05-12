@@ -1,46 +1,65 @@
-from flask import Blueprint, request, render_template, redirect
-from app.db import get_db
+from flask import Blueprint, redirect, url_for, session, render_template
+from app.extensions import oauth
 
 auth = Blueprint("auth", __name__)
 
+# KEYCLOAK CLIENT
+keycloak = oauth.register(
+    name="keycloak",
+    client_id="cliente",
+    client_secret="YOUR_CLIENT_SECRET",
+    server_metadata_url="http://localhost:8080/realms/mi-realm/.well-known/openid-configuration",
+    client_kwargs={
+        "scope": "openid profile email"
+    }
+)
+
+# HOME 
 @auth.route("/")
-def login_page():
+def home():
+    if "user" in session:
+        return redirect("/dashboard")
     return render_template("login.html")
 
-@auth.route("/login", methods=["POST"])
+# LOGIN 
+@auth.route("/login")
 def login():
-    user = request.form["user"]
-    pwd = request.form["password"]
+    redirect_uri = "http://localhost:5000/callback"
+    print("REDIRECT URI:", redirect_uri)
+    return keycloak.authorize_redirect(redirect_uri)
 
-    db = get_db()
-    cursor = db.cursor()
+# CALLBACK 
+@auth.route("/callback")
+def callback():
+    token = keycloak.authorize_access_token()
 
-    cursor.execute(
-        "SELECT * FROM usuarios WHERE usuario=%s AND password=%s",
-        (user, pwd)
+    userinfo = token.get("userinfo")
+
+    session["user"] = {
+        "sub": userinfo["sub"],
+        "username": userinfo.get("preferred_username"),
+        "email": userinfo.get("email"),
+        "roles": userinfo.get("realm_access", {}).get("roles", [])
+    }
+
+    return redirect("/dashboard")
+
+# DASHBOARD 
+@auth.route("/dashboard")
+def dashboard():
+    if "user" not in session:
+        return redirect("/login")
+
+    return render_template(
+        "dashboard.html",
+        user=session["user"]
     )
 
-    result = cursor.fetchone()
-
-    if result:
-        return redirect("/dashboard")
-
-    return "Login incorrecto"
-
-
-@auth.route("/register", methods=["POST"])
-def register():
-    user = request.form["user"]
-    pwd = request.form["password"]
-
-    db = get_db()
-    cursor = db.cursor()
-
-    cursor.execute(
-        "INSERT INTO usuarios (usuario, password, provider) VALUES (%s,%s,%s)",
-        (user, pwd, "local")
+# LOGOUT
+@auth.route("/logout")
+def logout():
+    session.clear()
+    logout = (
+        "http://localhost:8080/realms/mi-realm/.well-known/openid-configuration/logout?client_id=cliente&post_logout_redirect_uri=http://localhost:5000/"
     )
-
-    db.commit()
-
-    return "Usuario creado"
+    return redirect(logout)
