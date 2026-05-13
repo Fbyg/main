@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +17,8 @@
 
         :root {
             --bg: #f5f5f5;
-            --text: #111111;
-            --nav-bg: rgba(255, 255, 255, 0.7);
+            --text: #000000;
+            --nav-bg: rgba(209, 209, 209, 0.664);
             --nav-border: rgba(0, 0, 0, 0.1);
             --card-bg: #ffffff;
         }
@@ -35,6 +36,7 @@
             background: var(--bg);
             color: var(--text);
             transition: 0.3s ease;
+            padding-top: 70px;
         }
 
         nav {
@@ -70,6 +72,7 @@
             font-size: 14px;
             transition: 0.3s ease;
             position: relative;
+            cursor: pointer;
         }
 
         .nav-links a::after {
@@ -78,8 +81,8 @@
             left: 0;
             bottom: -4px;
             width: 0%;
-            height: 1px;
-            background: var(--text);
+            height: 2px;
+            background: rgb(255, 153, 0);
             transition: 0.3s ease;
         }
 
@@ -87,24 +90,73 @@
             width: 100%;
         }
 
-        .container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 70px;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 30px;
+            width: 100%;
         }
 
         .card {
+            width: 100%;
+            min-height: 180px;
+            padding: 25px;
+            border-radius: 1px;
             background: var(--card-bg);
-            padding: 40px 60px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.301);
+            color: var(--text);
+            box-shadow: 0 10px 25px var(--shadow);
             transition: 0.3s ease;
+            border: 2px solid rgb(0, 0, 0);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+        }
+
+        body.dark .card {
+            background: rgba(26, 29, 36, 0.7);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 2, 2, 0.603);
+        }
+
+        body.dark .card:hover {
+            background: rgba(26, 29, 36, 0.9);
+            
+        }
+
+        .info {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark .row {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .label {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        .value {
+            font-size: 13px;
+            font-weight: 600;
         }
 
         p {
-            font-size: 32px;
+            font-size: 19px;
             font-weight: 400;
             letter-spacing: 1px;
             color: var(--text);
@@ -114,7 +166,7 @@
             padding: 8px 14px;
             border-radius: 20px;
             border: 1px solid #444;
-            background: #1a1a1a;
+            background: var(--nav-bg);
             color: white;
             cursor: pointer;
             transition: 0.3s ease;
@@ -123,22 +175,168 @@
         .theme-btn:hover {
             background: #2e2546;
         }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid red;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        body.dark .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #fff;
+        }
+
+        .profile-card {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 250px;
+        }
+
+        .profile-card,
+        #configCard {
+            position: fixed;
+            z-index: 2000;
+        }
+
+        .profile-card p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        body.dark .profile-card,
+        body.dark #configCard {
+            background: #1a1d24;
+            backdrop-filter: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h2{
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: var(--text);
+        }
     </style>
 </head>
+
 <body>
+    <h2>Bienvenido/a {{user.email}}</h2>
+    <div class="profile-card hidden" id="profileCard">
+        <h3>👤 Perfil</h3>
+        <p><b>Nombre:</b> <span id="name"></span></p>
+        <p><b>Email:</b> <span id="email"></span></p>
+        <p><b>Usuario:</b> <span id="username"></span></p>
+        <p><b>Nombre completo:</b> <span id="fullname"></span></p>
+        <p><b>Estado:</b> <span id="status"></span></p>
+        <p><b>Navegador:</b> <span id="browser"></span></p>
+        <p><b>Idioma:</b> <span id="language"></span></p>
+        <p><b>Pantalla:</b> <span id="screen"></span></p>
+        <p><b>Bateria:</b> <span id="battery"></span></p>
+        <p><b>Zona horaria:</b> <span id="timezone"></span></p>
+    </div>
+    <div class="profile-card hidden" id="configCard">
+        <h3>⚙️ Configuración</h3>
+        <p><b>Email verificado:</b><span id="emailVerified"></span></p>
+        <p><b>Roles:</b> <span id="roles"></span></p>
+        <hr style="margin:10px 0;">
+        <p><b>Dispositivo:</b></p>
+        <p id="deviceInfo"></p>
+    </div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Cargando sesión...</p>
+    </div>
     <nav>
         <div class="logo">Dashboard</div>
         <div class="nav-links">
             <a href="#">Inicio</a>
-            <a href="#">Perfil</a>
-            <a href="#">Configuración</a>
+            <a id="profileBtn">Perfil</a>
+            <a id="configBtn">Configuración</a>
             <a href="/logout">Cerrar sesión</a>
             <button id="themeToggle" class="theme-btn">🌙</button>
         </div>
     </nav>
-    <div class="container">
+    <div class="grid">
         <div class="card">
-            <p>Bienvenido/a {{ user.email }}</p>
+            <h3>👤 Perfil</h3>
+
+            <div class="info">
+                <div class="row">
+                    <span class="label">Correo</span>
+                    <span class="value" id="emailValue">-</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Usuario</span>
+                    <span class="value" id="userValue">-</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Nombre</span>
+                    <span class="value" id="nameValue">-</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>💻 Información del dispositivo</h3>
+
+            <div class="row">
+                <span class="label">CPU</span>
+                <span class="value" id="cpuValue"></span>
+            </div>
+
+            <div class="row">
+                <span class="label">RAM</span>
+                <span class="value" id="ramValue"></span>
+            </div>
+
+            <div class="row">
+                <span class="label">Sistema operativo</span>
+                <span class="value" id="osValue"></span>
+            </div>
+
+            <div class="row">
+                <span class="label">Arquitectura</span>
+                <span class="value" id="archValue"></span>
+            </div>
+
+            <div class="row">
+                <span class="label">Batería</span>
+                <span class="value" id="batteryValue"></span>
+            </div>
         </div>
     </div>
     <script>
@@ -153,5 +351,188 @@
             }
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@latest/dist/keycloak.min.js"></script>
+
+    <script>
+
+        const loader = document.getElementById("loader");
+
+        const keycloak = new Keycloak({
+            url: "http://localhost:8080",
+            realm: "mi-realm",
+            clientId: "cliente"
+        });
+
+        function loadUserProfile() {
+            const token = keycloak.tokenParsed;
+
+            document.getElementById("emailValue").textContent =
+                token?.email || "N/A";
+
+            document.getElementById("userValue").textContent =
+                token?.preferred_username || "N/A";
+
+            const fullName =
+                `${token?.given_name || ""} ${token?.family_name || ""}`.trim();
+
+            document.getElementById("nameValue").textContent =
+                fullName || token?.name || "N/A";
+        }
+
+        function updateSessionStatus() {
+            if (!keycloak.tokenParsed) return;
+
+            const token = keycloak.tokenParsed;
+            const now = Math.floor(Date.now() / 1000);
+
+            const isActive = keycloak.authenticated && token.exp > now;
+
+            const status = document.getElementById("status");
+            if (!status) return;
+
+            status.textContent = isActive ? "🟢 Activa" : "🔴 Inactiva";
+            status.style.color = isActive ? "limegreen" : "red";
+        }
+
+        keycloak.init({
+            onLoad: "login-required",
+            pkceMethod: "S256",
+            checkLoginIframe: false
+        }).then(() => {
+
+            loader.style.display = "none";
+
+            loadUserProfile();
+            updateSessionStatus();
+            loadSystemInfo();
+            loadDeviceInfo()
+
+            setInterval(updateSessionStatus, 10000);
+        });
+
+        const profileBtn = document.getElementById("profileBtn");
+        const profileCard = document.getElementById("profileCard");
+
+        profileBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            profileCard.classList.toggle("hidden");
+
+            loadUserProfile();
+            updateSessionStatus();
+            loadDeviceInfo();
+
+        });
+        function loadDeviceInfo() {
+
+            const ua = navigator.userAgent;
+            let browser = "Desconocido";
+
+            if (ua.includes("Edg")) {
+                browser = "Edge";
+            }
+            else if (ua.includes("OPR")) {
+                browser = "Opera";
+            }
+            else if (ua.includes("Chrome")) {
+                browser = "Chrome";
+            }
+            else if (ua.includes("Firefox")) {
+                browser = "Firefox";
+            }
+            else if (ua.includes("Safari")) {
+                browser = "Safari";
+            }
+
+            document.getElementById("browser").textContent = browser;
+
+            document.getElementById("language").textContent =
+                navigator.language || "N/A";
+
+            document.getElementById("screen").textContent =
+                `${screen.width} x ${screen.height}`;
+
+            document.getElementById("timezone").textContent =
+                Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            navigator.getBattery().then(battery => {
+                const level = Math.round(battery.level * 100) + "%";
+                document.getElementById("battery").textContent = level;
+            });
+
+        }
+
+        const configBtn = document.getElementById("configBtn")
+        const configCard = document.getElementById("configCard");
+        configBtn.addEventListener("click", (e) => {
+            e.preventDefault()
+            configCard.classList.toggle("hidden")
+            configSettings()
+        })
+
+        function loadSystemInfo() {
+
+            // CPU (cores lógicos)
+            document.getElementById("cpuValue").textContent =
+                navigator.hardwareConcurrency
+                    ? `${navigator.hardwareConcurrency} cores`
+                    : "N/A";
+
+            // RAM (estimada)
+            document.getElementById("ramValue").textContent =
+                navigator.deviceMemory
+                    ? `${navigator.deviceMemory} GB (aprox)`
+                    : "N/A";
+
+            // SISTEMA OPERATIVO
+            const ua = navigator.userAgent || "";
+
+            let os = "Desconocido";
+            if (ua.includes("Windows")) os = "Windows";
+            else if (ua.includes("Mac")) os = "macOS";
+            else if (ua.includes("Linux")) os = "Linux";
+            else if (ua.includes("Android")) os = "Android";
+            else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+
+            document.getElementById("osValue").textContent = os;
+
+            // ARQUITECTURA (MUY LIMITADO)
+            const arch =
+                navigator.userAgentData?.architecture ||
+                navigator.platform ||
+                "N/A";
+
+            document.getElementById("archValue").textContent = arch;
+
+            // BATERÍA (bien hecho)
+            const batteryEl = document.getElementById("batteryValue");
+
+            if (navigator.getBattery && batteryEl) {
+                navigator.getBattery().then(battery => {
+                    const level = Math.round(battery.level * 100);
+                    const status = battery.charging ? "⚡ cargando" : "🔋 batería";
+
+                    batteryEl.textContent = `${level}% ${status}`;
+                });
+            } else {
+                batteryEl.textContent = "No disponible";
+            }
+        }
+
+        function configSettings() {
+            const token = keycloak.tokenParsed;
+
+            document.getElementById("emailVerified").textContent =
+                token?.email_verified ? "✅ Sí" : "❌ No";
+
+            document.getElementById("roles").textContent =
+                token?.realm_access?.roles?.join(", ") || "N/A";
+
+            const deviceInfo = `Plataforma: ${navigator.platform}, Arquitectura: ${navigator.userAgentData?.architecture || "N/A"}`;
+            document.getElementById("deviceInfo").textContent = deviceInfo;
+        }
+    </script>
+
 </body>
+
 </html>
