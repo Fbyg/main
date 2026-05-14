@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Bienvenido {{user.email}}</title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
@@ -111,7 +111,7 @@
         }
 
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-2px);
         }
 
         body.dark .card {
@@ -122,7 +122,7 @@
 
         body.dark .card:hover {
             background: rgba(26, 29, 36, 0.9);
-            
+
         }
 
         .info {
@@ -242,34 +242,94 @@
             display: none;
         }
 
-        h2{
+        h2 {
             text-align: center;
             margin-bottom: 25px;
             font-weight: 500;
             color: var(--text);
         }
+
+
+
+        .bell-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text);
+            transition: .3s ease;
+        }
+
+        #notificationCount {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: red;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .battery-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .battery-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 180px;
+        }
+
+        .battery-bar {
+            width: 100%;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        #batteryLevel {
+            height: 100%;
+            width: 0%;
+            border-radius: 30px;
+            transition:
+                width .5s ease,
+                background .5s ease;
+            background: limegreen;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
 <body>
-    <h2>Bienvenido/a {{user.email}}</h2>
+    <h2 title="Bienvenido/a {{user.username}}">Bienvenido/a {{user.email}}</h2>
     <div class="profile-card hidden" id="profileCard">
-        <h3>👤 Perfil</h3>
+        <h3>👤 Informacion del usuario</h3>
         <p><b>Nombre:</b> <span id="name"></span></p>
         <p><b>Email:</b> <span id="email"></span></p>
         <p><b>Usuario:</b> <span id="username"></span></p>
         <p><b>Nombre completo:</b> <span id="fullname"></span></p>
-        <p><b>Estado:</b> <span id="status"></span></p>
-        <p><b>Navegador:</b> <span id="browser"></span></p>
-        <p><b>Idioma:</b> <span id="language"></span></p>
-        <p><b>Pantalla:</b> <span id="screen"></span></p>
-        <p><b>Bateria:</b> <span id="battery"></span></p>
-        <p><b>Zona horaria:</b> <span id="timezone"></span></p>
     </div>
     <div class="profile-card hidden" id="configCard">
         <h3>⚙️ Configuración</h3>
-        <p><b>Email verificado:</b><span id="emailVerified"></span></p>
-        <p><b>Roles:</b> <span id="roles"></span></p>
         <hr style="margin:10px 0;">
         <p><b>Dispositivo:</b></p>
         <p id="deviceInfo"></p>
@@ -283,16 +343,21 @@
         <div class="logo">Dashboard</div>
         <div class="nav-links">
             <a href="#">Inicio</a>
-            <a id="profileBtn">Perfil</a>
-            <a id="configBtn">Configuración</a>
-            <a href="/logout">Cerrar sesión</a>
-            <button id="themeToggle" class="theme-btn">🌙</button>
+            <a id="profileBtn" title="Ver perfil">Perfil</a>
+            <a id="configBtn" title="Configuración">Configuración</a>
+            <a href="/logout" title="Cerrar sesión">Cerrar sesión</a>
+            <div class="notification-wrapper">
+                <button id="bellBtn" class="bell-btn" title="Notificaciones">
+                    🔔
+                    <span id="notificationCount">0</span>
+                </button>
+            </div>
+            <button id="themeToggle" class="theme-btn" title="Cambiar tema">🌙</button>
         </div>
     </nav>
     <div class="grid">
         <div class="card">
-            <h3>👤 Perfil</h3>
-
+            <h3>👤 Informacion del usuario</h3>
             <div class="info">
                 <div class="row">
                     <span class="label">Correo</span>
@@ -308,20 +373,22 @@
                     <span class="label">Nombre</span>
                     <span class="value" id="nameValue">-</span>
                 </div>
+                <div class="row">
+                    <span class="label"> Sesión</span>
+                    <span id="status"></span>
+                </div>
+                <div class="row">
+                    <span class="label">Hora de conexion</span>
+                    <span id="loginTime">-</span>
+                </div>
+                <div class="row">
+                    <span class="label">Sesion restante</span>
+                    <span class="value" id="sessionTime">-</span>
+                </div>
             </div>
         </div>
         <div class="card">
             <h3>💻 Información del dispositivo</h3>
-
-            <div class="row">
-                <span class="label">CPU</span>
-                <span class="value" id="cpuValue"></span>
-            </div>
-
-            <div class="row">
-                <span class="label">RAM</span>
-                <span class="value" id="ramValue"></span>
-            </div>
 
             <div class="row">
                 <span class="label">Sistema operativo</span>
@@ -329,16 +396,28 @@
             </div>
 
             <div class="row">
-                <span class="label">Arquitectura</span>
-                <span class="value" id="archValue"></span>
+                <span class="label">Conexion</span>
+                <span class="value" id="internetValue">-</span>
             </div>
 
             <div class="row">
+                <span class="label">Resolucion</span>
+                <span class="value" id="resolutionValue">-</span>
+            </div>
+
+            <div class="row battery-row">
                 <span class="label">Batería</span>
-                <span class="value" id="batteryValue"></span>
+                <div class="battery-container">
+                    <div class="battery-bar">
+                        <div id="batteryLevel">
+                            <span id="batteryText">0%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
         const btn = document.getElementById("themeToggle");
         btn.addEventListener("click", () => {
@@ -364,19 +443,42 @@
         });
 
         function loadUserProfile() {
+
             const token = keycloak.tokenParsed;
 
-            document.getElementById("emailValue").textContent =
-                token?.email || "N/A";
-
-            document.getElementById("userValue").textContent =
-                token?.preferred_username || "N/A";
+            if (!token) return;
 
             const fullName =
                 `${token?.given_name || ""} ${token?.family_name || ""}`.trim();
 
-            document.getElementById("nameValue").textContent =
-                fullName || token?.name || "N/A";
+            const email = token?.email || "N/A";
+            const username = token?.preferred_username || "N/A";
+            const name = fullName || token?.name || "N/A";
+
+            // CARD PRINCIPAL
+            document.getElementById("emailValue").textContent = email;
+            document.getElementById("userValue").textContent = username;
+            document.getElementById("nameValue").textContent = name;
+
+            // PROFILE CARD
+            document.getElementById("email").textContent = email;
+            document.getElementById("username").textContent = username;
+            document.getElementById("fullname").textContent = name;
+            document.getElementById("name").textContent = token?.given_name || name;
+
+            const issueAt = token?.iat
+            if (issueAt) {
+                const loginDate = new Date(issueAt * 1000)
+
+                document.getElementById("loginTime").textContent = loginDate.toLocaleString("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                })
+            }
         }
 
         function updateSessionStatus() {
@@ -391,7 +493,7 @@
             if (!status) return;
 
             status.textContent = isActive ? "🟢 Activa" : "🔴 Inactiva";
-            status.style.color = isActive ? "limegreen" : "red";
+            status.style.color = isActive ? "green" : "red";
         }
 
         keycloak.init({
@@ -406,8 +508,10 @@
             updateSessionStatus();
             loadSystemInfo();
             loadDeviceInfo()
+            updateSessionTime();
 
             setInterval(updateSessionStatus, 10000);
+            setInterval(updateSessionTime, 1000)
         });
 
         const profileBtn = document.getElementById("profileBtn");
@@ -421,45 +525,14 @@
             loadUserProfile();
             updateSessionStatus();
             loadDeviceInfo();
+            updateSessionTime();
 
         });
         function loadDeviceInfo() {
-
-            const ua = navigator.userAgent;
-            let browser = "Desconocido";
-
-            if (ua.includes("Edg")) {
-                browser = "Edge";
-            }
-            else if (ua.includes("OPR")) {
-                browser = "Opera";
-            }
-            else if (ua.includes("Chrome")) {
-                browser = "Chrome";
-            }
-            else if (ua.includes("Firefox")) {
-                browser = "Firefox";
-            }
-            else if (ua.includes("Safari")) {
-                browser = "Safari";
-            }
-
-            document.getElementById("browser").textContent = browser;
-
-            document.getElementById("language").textContent =
-                navigator.language || "N/A";
-
-            document.getElementById("screen").textContent =
-                `${screen.width} x ${screen.height}`;
-
-            document.getElementById("timezone").textContent =
-                Intl.DateTimeFormat().resolvedOptions().timeZone;
-
             navigator.getBattery().then(battery => {
                 const level = Math.round(battery.level * 100) + "%";
                 document.getElementById("battery").textContent = level;
             });
-
         }
 
         const configBtn = document.getElementById("configBtn")
@@ -467,22 +540,9 @@
         configBtn.addEventListener("click", (e) => {
             e.preventDefault()
             configCard.classList.toggle("hidden")
-            configSettings()
         })
 
         function loadSystemInfo() {
-
-            // CPU (cores lógicos)
-            document.getElementById("cpuValue").textContent =
-                navigator.hardwareConcurrency
-                    ? `${navigator.hardwareConcurrency} cores`
-                    : "N/A";
-
-            // RAM (estimada)
-            document.getElementById("ramValue").textContent =
-                navigator.deviceMemory
-                    ? `${navigator.deviceMemory} GB (aprox)`
-                    : "N/A";
 
             // SISTEMA OPERATIVO
             const ua = navigator.userAgent || "";
@@ -496,43 +556,109 @@
 
             document.getElementById("osValue").textContent = os;
 
-            // ARQUITECTURA (MUY LIMITADO)
-            const arch =
-                navigator.userAgentData?.architecture ||
-                navigator.platform ||
-                "N/A";
+            const width = screen.width;
+            const height = screen.height;
 
-            document.getElementById("archValue").textContent = arch;
+            document.getElementById("resolutionValue").textContent =
+                `${width}x${height} px`;
 
             // BATERÍA 
             const batteryEl = document.getElementById("batteryValue");
 
-            if (navigator.getBattery && batteryEl) {
-                navigator.getBattery().then(battery => {
-                    const level = Math.round(battery.level * 100);
-                    const status = battery.charging ? "⚡ cargando" : "🔋 batería";
+            if (navigator.getBattery) {
 
-                    batteryEl.textContent = `${level}% ${status}`;
+                navigator.getBattery().then(battery => {
+
+                    const batteryLevel =
+                        document.getElementById("batteryLevel");
+
+                    const batteryText =
+                        document.getElementById("batteryText");
+
+                    function updateBattery() {
+
+                        const level =
+                            Math.round(battery.level * 100);
+
+                        batteryLevel.style.width = level + "%";
+
+                        let color = "limegreen";
+
+                        if (level <= 20) {
+                            color = "red";
+                        }
+                        else if (level <= 50) {
+                            color = "orange";
+                        }
+                        batteryLevel.style.background = color;
+                        batteryText.textContent =
+                            battery.charging
+                                ? `⚡ ${level}%`
+                                : `${level}%`;
+                    }
+                    updateBattery();
+                    battery.addEventListener(
+                        "levelchange",
+                        updateBattery
+                    );
+                    battery.addEventListener(
+                        "chargingchange",
+                        updateBattery
+                    );
                 });
-            } else {
-                batteryEl.textContent = "No disponible";
+
             }
         }
 
-        function configSettings() {
-            const token = keycloak.tokenParsed;
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        function updateConnection() {
 
-            document.getElementById("emailVerified").textContent =
-                token?.email_verified ? "✅ Sí" : "❌ No";
+            if (!connection) {
+                document.getElementById("internetValue").textContent = "N/A";
+                return;
+            }
+            let type = connection.effectiveType || "Desconocido";
+            const map = {
+                "slow-2g": "Muy lenta",
+                "2g": "Lenta",
+                "3g": "Normal",
+                "4g": "Rápida"
+            };
 
-            document.getElementById("roles").textContent =
-                token?.realm_access?.roles?.join(", ") || "N/A";
+            const speed = connection.downlink
+                ? ` (${connection.downlink} Mbps)`
+                : "";
 
-            const deviceInfo = `Plataforma: ${navigator.platform}, Arquitectura: ${navigator.userAgentData?.architecture || "N/A"}`;
-            document.getElementById("deviceInfo").textContent = deviceInfo;
+            document.getElementById("internetValue").textContent =
+                map[type] || type;
+        }
+        updateConnection();
+
+        if (connection) {
+            connection.addEventListener("change", updateConnection);
+        }
+
+        function updateSessionTime() {
+
+            if (!keycloak.tokenParsed?.exp) return;
+
+            const exp = keycloak.tokenParsed.exp * 1000;
+            const now = Date.now();
+
+            const diff = exp - now;
+
+            if (diff <= 0) {
+                document.getElementById("sessionTime").textContent = "Expirada 🔴";
+                return;
+            }
+
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById("sessionTime").textContent =
+                `${minutes}m ${seconds}s`;
         }
     </script>
-
 </body>
 
 </html>
