@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido {{user.email}}</title>
+    <title>Bienvenido/a</title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
@@ -244,12 +244,11 @@
 
         h2 {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+            margin-top: 15px;
             font-weight: 500;
             color: var(--text);
         }
-
-
 
         .bell-btn {
             position: relative;
@@ -316,11 +315,98 @@
             color: white;
             white-space: nowrap;
         }
+
+        .expired-banner {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: #ff2d2d;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
+            z-index: 3000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #offlineOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(94, 93, 93, 0.226);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .offline-box {
+            background: #1a1d24;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            width: 320px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #offline {
+            color: white;
+        }
+
+        #msgOffline {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        .popup-box {
+            width: 320px;
+            padding: 25px;
+            border-radius: 12px;
+            background: #1a1d24;
+            color: white;
+            text-align: center;
+            animation: popupShow .25s ease;
+        }
+
+        @keyframes popupShow {
+
+            from {
+                opacity: 0;
+                transform: scale(.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 
 <body>
-    <h2 title="Bienvenido/a {{user.username}}">Bienvenido/a {{user.email}}</h2>
+    <!-- Titulo de bienvenida -->
+    <h2 id="welcomeTittle">Bienvenido/a</h2>
+
+    <!-- perfil usuario y configuracion -->
     <div class="profile-card hidden" id="profileCard">
         <h3>👤 Informacion del usuario</h3>
         <p><b>Nombre:</b> <span id="name"></span></p>
@@ -335,10 +421,13 @@
         <p id="deviceInfo"></p>
     </div>
 
+    <!-- Loader de carga -->
     <div id="loader">
         <div class="spinner"></div>
         <p>Cargando sesión...</p>
     </div>
+
+    <!-- Barra de navegación -->
     <nav>
         <div class="logo">Dashboard</div>
         <div class="nav-links">
@@ -355,6 +444,26 @@
             <button id="themeToggle" class="theme-btn" title="Cambiar tema">🌙</button>
         </div>
     </nav>
+
+    <!-- Banner de sesión expirada -->
+    <div id="expiredBanner" class="expired-banner hidden"> Tu sesión ha expirado. Por favor vuelve a iniciar sesión.
+    </div>
+
+    <!-- Overlay de sin conexión y restauración -->
+    <div id="offlineOverlay" class="hidden">
+        <div class="offline-box">
+            <h2 id="offline">Sin conexión</h2>
+            <p id="msgOffline">La aplicación está pausada hasta recuperar internet.</p>
+        </div>
+    </div>
+    <div id="onlinePopup" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2 id="offline">✅ Conexión restaurada</h2>
+            <p id="msgOffline">La aplicación vuelve a estar disponible.</p>
+        </div>
+    </div>
+
+    <!-- grid principal con información del usuario y del dispositivo -->
     <div class="grid">
         <div class="card">
             <h3>👤 Informacion del usuario</h3>
@@ -442,18 +551,17 @@
             clientId: "cliente"
         });
 
+        // Cargar perfil de usuario de Keycloak
         function loadUserProfile() {
 
             const token = keycloak.tokenParsed;
 
             if (!token) return;
 
-            const fullName =
-                `${token?.given_name || ""} ${token?.family_name || ""}`.trim();
-
             const email = token?.email || "N/A";
             const username = token?.preferred_username || "N/A";
-            const name = fullName || token?.name || "N/A";
+            const name = token?.given_name || "N/A";
+
 
             // CARD PRINCIPAL
             document.getElementById("emailValue").textContent = email;
@@ -464,7 +572,10 @@
             document.getElementById("email").textContent = email;
             document.getElementById("username").textContent = username;
             document.getElementById("fullname").textContent = name;
+            document.getElementById("welcomeTittle").textContent = `Bienvenido/a ${name}`;
             document.getElementById("name").textContent = token?.given_name || name;
+            document.title = `Bienvenido/a ${name}`;
+
 
             const issueAt = token?.iat
             if (issueAt) {
@@ -481,6 +592,7 @@
             }
         }
 
+        // Verificar estado de la sesión
         function updateSessionStatus() {
             if (!keycloak.tokenParsed) return;
 
@@ -507,7 +619,6 @@
             loadUserProfile();
             updateSessionStatus();
             loadSystemInfo();
-            loadDeviceInfo()
             updateSessionTime();
 
             setInterval(updateSessionStatus, 10000);
@@ -524,16 +635,9 @@
 
             loadUserProfile();
             updateSessionStatus();
-            loadDeviceInfo();
             updateSessionTime();
 
         });
-        function loadDeviceInfo() {
-            navigator.getBattery().then(battery => {
-                const level = Math.round(battery.level * 100) + "%";
-                document.getElementById("battery").textContent = level;
-            });
-        }
 
         const configBtn = document.getElementById("configBtn")
         const configCard = document.getElementById("configCard");
@@ -542,9 +646,10 @@
             configCard.classList.toggle("hidden")
         })
 
+        // Cargar información del sistema
         function loadSystemInfo() {
 
-            // SISTEMA OPERATIVO
+            // Sistema operativo
             const ua = navigator.userAgent || "";
 
             let os = "Desconocido";
@@ -556,6 +661,7 @@
 
             document.getElementById("osValue").textContent = os;
 
+            // Resolución de pantalla
             const width = screen.width;
             const height = screen.height;
 
@@ -566,20 +672,14 @@
             const batteryEl = document.getElementById("batteryValue");
 
             if (navigator.getBattery) {
-
                 navigator.getBattery().then(battery => {
-
                     const batteryLevel =
                         document.getElementById("batteryLevel");
-
                     const batteryText =
                         document.getElementById("batteryText");
-
                     function updateBattery() {
-
                         const level =
                             Math.round(battery.level * 100);
-
                         batteryLevel.style.width = level + "%";
 
                         let color = "limegreen";
@@ -610,6 +710,7 @@
             }
         }
 
+        // Información de conexión a internet
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         function updateConnection() {
 
@@ -625,12 +726,8 @@
                 "4g": "Rápida"
             };
 
-            const speed = connection.downlink
-                ? ` (${connection.downlink} Mbps)`
-                : "";
-
             document.getElementById("internetValue").textContent =
-                map[type] || type;
+                map[type] || map;
         }
         updateConnection();
 
@@ -638,6 +735,7 @@
             connection.addEventListener("change", updateConnection);
         }
 
+        // Actualizar tiempo restante de sesión
         function updateSessionTime() {
 
             if (!keycloak.tokenParsed?.exp) return;
@@ -648,8 +746,8 @@
             const diff = exp - now;
 
             if (diff <= 0) {
-                document.getElementById("sessionTime").textContent = "Expirada 🔴";
-                return;
+                keycloak.logout();
+
             }
 
             const minutes = Math.floor(diff / 60000);
@@ -658,7 +756,109 @@
             document.getElementById("sessionTime").textContent =
                 `${minutes}m ${seconds}s`;
         }
+
+        // Comprobar si esta conectado a internet
+        let sessionStatusInterval;
+        let sessionTimeInterval;
+        let tokenRefreshInterval;
+
+        function pauseApp() {
+
+            document
+                .getElementById("offlineOverlay")
+                .classList
+                .remove("hidden");
+
+            clearInterval(sessionStatusInterval);
+            clearInterval(sessionTimeInterval);
+            clearInterval(tokenRefreshInterval);
+
+            document.body.style.pointerEvents = "none";
+
+            document
+                .getElementById("offlineOverlay")
+                .style.pointerEvents = "all";
+
+            console.log("Aplicación pausada");
+        }
+
+        // Reanudar aplicación al recuperar conexión
+        function resumeApp() {
+
+            document
+                .getElementById("offlineOverlay")
+                .classList
+                .add("hidden");
+
+            document.body.style.pointerEvents = "auto";
+
+            sessionStatusInterval =
+                setInterval(updateSessionStatus, 10000);
+
+            sessionTimeInterval =
+                setInterval(updateSessionTime, 1000);
+
+            tokenRefreshInterval =
+                setInterval(() => {
+                    keycloak.updateToken(30)
+                        .catch(() => keycloak.logout());
+                }, 30000);
+
+            console.log("Aplicación reanudada");
+        }
+
+        window.addEventListener("offline", () => {
+            console.log("Sin conexión a internet");
+            pauseApp();
+        });
+
+        window.addEventListener("online", async () => {
+            console.log("Conexión restaurada");
+
+            try {
+                await keycloak.updateToken(5);
+                resumeApp();
+            } catch {
+                keycloak.logout();
+            }
+        });
+
+        if (!navigator.onLine) {
+            pauseApp();
+        }
+
+        function showOnlinePopup() {
+            const popup =
+                document.getElementById("onlinePopup");
+
+            popup.classList.remove("hidden");
+
+            setTimeout(() => {
+                popup.classList.add("hidden");
+            }, 4000);
+        }
+
+        document
+            .getElementById("onlinePopup")
+            .addEventListener("click", (e) => {
+                if (e.target.id === "onlinePopup") {
+                    e.currentTarget
+                        .classList
+                        .add("hidden");
+                }
+            });
+
+        window.addEventListener("online", async () => {
+            console.log("Conexión restaurada");
+
+            try {
+                await keycloak.updateToken(5);
+                resumeApp();
+                showOnlinePopup();
+            } catch {
+                keycloak.logout();
+            }
+        });
     </script>
 </body>
-
 </html>
