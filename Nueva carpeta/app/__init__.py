@@ -2,7 +2,7 @@ from flask import Flask
 from .extensions import oauth
 
 def create_app():
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="templates", static_folder="static")
     app.secret_key = "super-secret"
 
     oauth.init_app(app)

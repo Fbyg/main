@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <title></title>
+</head>
+
+<body>
+    <!-- Titulo de bienvenida -->
+    <div class="welcome-header">
+        <h2 id="welcomeTittle"></h2>
+        <div class="avatar" id="avatarHeader"></div>
+    </div>
+    <p id="welcomeUserText" class="welcome-user-text"></p>
+
+    <!-- Loader de carga -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Cargando sesión...</p>
+    </div>
+
+    <!-- Barra de navegación -->
+    <nav>
+        <div class="logo">Dashboard</div>
+        <div class="nav-links">
+            <a href="#">Inicio</a>
+            <a id="profileBtn" title="Ver perfil">Perfil</a>
+            <a id="configBtn" title="Configuración">Configuración</a>
+            <a href="/logout" title="Cerrar sesión">Cerrar sesión</a>
+            <div class="notification-wrapper">
+                <button id="bellBtn" class="bell-btn" title="Notificaciones">
+                    🔔
+                    <span id="notificationCount">0</span>
+                </button>
+            </div>
+            <button id="themeToggle" class="theme-btn" title="Cambiar tema">🌙</button>
+        </div>
+    </nav>
+
+    <!-- Overlay de sesión expirada -->
+    <div id="expiredOverlay" class="expired-overlay hidden">
+        <div class="expired-box">
+            <h2 style="color: white;">Sesión expirada</h2>
+            <p style="color: white;">Tu sesión ha finalizado por seguridad.</p>
+            <button id="reloginBtn">Volver a iniciar sesión</button>
+        </div>
+    </div>
+
+    <!-- Overlay de sin conexión y restauración -->
+    <div id="offlineOverlay" class="hidden">
+        <div class="offline-box">
+            <h2 style="color: white;">Sin conexión</h2>
+            <p style="color: white;">La aplicación está pausada hasta recuperar internet.</p>
+        </div>
+    </div>
+    <div id="onlinePopup" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2 id="offline">✅ Conexión restaurada</h2>
+            <p id="msgOffline">La aplicación vuelve a estar disponible.</p>
+        </div>
+    </div>
+
+    <!-- grid principal con información del usuario y del dispositivo -->
+    <div class="grid">
+        <div class="card" title="Informacion del usuario">
+            <h3>👤 Información del usuario</h3>
+            <div class="info">
+                <div class="row">
+                    <span class="label">Nombre</span>
+                    <span class="value" id="nameValue">-</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Usuario</span>
+                    <span class="value" id="userValue">-</span>
+                </div>
+                <div class="row">
+                    <span class="label">Correo</span>
+                    <span class="value" id="emailValue">-</span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card" title="Informacion de la sesion">
+            <h3>🔐 Informacion de la sesión</h3>
+            <div class="info">
+                <div class="row">
+                    <span class="label">Estado de sesión</span>
+                    <span id="status">-</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Tiempo restante</span>
+                    <span id="sessionTime">-</span>
+                </div>
+
+                <div class="row">
+                    <span class="label">Último inicio</span>
+                    <span id="loginTime">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/keycloak-js@latest/dist/keycloak.min.js"></script>
+    <script src="{{ url_for('static', filename='js/preferences.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/connection.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

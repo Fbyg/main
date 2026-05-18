@@ -1,9 +1,15 @@
 from flask import Blueprint, redirect, url_for, session, render_template
+from datetime import timedelta
 from app.extensions import oauth
 
 auth = Blueprint("auth", __name__)
 
-# KEYCLOAK CLIENT
+# 🔐 Config sesión Flask
+def init_app(app):
+    app.permanent_session_lifetime = timedelta(minutes=30)
+
+
+# 🔐 KEYCLOAK CLIENT
 keycloak = oauth.register(
     name="keycloak",
     client_id="cliente",
@@ -14,52 +20,67 @@ keycloak = oauth.register(
     }
 )
 
-# HOME 
+
+# 🏠 HOME
 @auth.route("/")
 def home():
     if "user" in session:
         return redirect("/dashboard")
     return render_template("login.html")
 
-# LOGIN 
+
+# 🔑 LOGIN
 @auth.route("/login")
 def login():
     redirect_uri = "http://localhost:5000/callback"
-    print("REDIRECT URI:", redirect_uri)
     return keycloak.authorize_redirect(redirect_uri)
 
-# CALLBACK 
+
+# 🔁 CALLBACK
 @auth.route("/callback")
 def callback():
-    token = keycloak.authorize_access_token()
 
+    token = keycloak.authorize_access_token()
     userinfo = token.get("userinfo")
 
+    if not userinfo:
+        return redirect("/login")
+
+    session.permanent = True
+
     session["user"] = {
-        "sub": userinfo["sub"],
+        "sub": userinfo.get("sub"),
         "username": userinfo.get("preferred_username"),
         "email": userinfo.get("email"),
+        "name": userinfo.get("name"),
         "roles": userinfo.get("realm_access", {}).get("roles", [])
     }
 
-    return redirect("/dashboard")
+    return redirect(url_for("auth.dashboard"))
 
-# DASHBOARD 
+
+# 📊 DASHBOARD
 @auth.route("/dashboard")
 def dashboard():
+
     if "user" not in session:
-        return redirect("/login")
+        return redirect(url_for("auth.login"))
 
     return render_template(
         "dashboard.html",
         user=session["user"]
     )
 
-# LOGOUT
+
+# 🚪 LOGOUT (IMPORTANTE CORREGIDO)
 @auth.route("/logout")
 def logout():
+
     session.clear()
-    logout = (
-        "http://localhost:8080/realms/mi-realm/.well-known/openid-configuration/logout?client_id=cliente&post_logout_redirect_uri=http://localhost:5000/"
+
+    logout_url = (
+        "http://localhost:8080/realms/mi-realm/protocol/openid-connect/logout"
+        "?redirect_uri=http://localhost:5000/"
     )
-    return redirect(logout)
+
+    return redirect(logout_url)
