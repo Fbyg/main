@@ -1,16 +1,27 @@
-const btn = document.getElementById("themeToggle");
+document.addEventListener("DOMContentLoaded", () => {
 
-btn.addEventListener("click", () => {
+    const btn = document.getElementById("themeToggle");
 
-    document.body.classList.toggle("dark");
+    function applyTheme(theme) {
+        document.body.classList.toggle("dark", theme === "dark");
+        btn.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
 
+    btn.addEventListener("click", () => {
+
+        const prefs = getUserPreferences();
+
+        const newTheme = document.body.classList.contains("dark")
+            ? "light"
+            : "dark";
+
+        prefs.theme = newTheme;
+        saveUserPreferences(prefs);
+
+        applyTheme(newTheme);
+    });
+
+    // aplicar tema inicial
     const prefs = getUserPreferences();
-
-    prefs.theme = document.body.classList.contains("dark")
-        ? "dark"
-        : "light";
-
-    saveUserPreferences(prefs);
-
-    btn.textContent = prefs.theme === "dark" ? "☀️" : "🌙";
+    applyTheme(prefs.theme || "light");
 });

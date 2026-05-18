@@ -18,8 +18,12 @@ function initAuth(onSuccess) {
 
         if (!authenticated) {
             console.log("No autenticado");
+            keycloak.login()
             return;
         }
+
+        const tokenData = keycloak.tokenParsed;
+        const token = keycloak.token;
 
         loadUserProfile();
         startSessionTimers();
@@ -45,3 +49,4 @@ function initAuth(onSuccess) {
         console.error("Keycloak init error", err);
     });
 }
+
