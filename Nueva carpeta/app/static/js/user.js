@@ -14,7 +14,7 @@ function setAvatar(name) {
         .split(" ")
         .filter(Boolean)
         .map(n => n[0])
-        .slice(0, 1)
+        .slice(0, 2)
         .join("")
         .toLowerCase();
 
@@ -22,7 +22,7 @@ function setAvatar(name) {
 
     if (avatar) {
         avatar.textContent = initials;
-        avatar.style.backgroundColor = "#1a73e8";
+        avatar.style.backgroundColor = "#3aa111";
         avatar.title = name;
     }
 }
@@ -74,6 +74,20 @@ function loadUserProfile() {
                 second: "2-digit"
             });
         }
+    }
+
+    const emailVerified = keycloak.tokenParsed?.email_verified;
+
+    const emailVerifiedEl = document.getElementById("emailVerified");
+
+    if (emailVerifiedEl) {
+        emailVerifiedEl.textContent = emailVerified
+            ? " Si"
+            : " No ";
+
+        emailVerifiedEl.style.color = emailVerified
+            ? "green"
+            : "red";
     }
     setAvatar(name)
 }
