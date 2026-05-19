@@ -3,41 +3,41 @@
 Este proyecto es un dashboard de usuario con autenticación basada en **Keycloak**, backend en **Flask** y frontend en **JavaScript vanilla**.
 
 Incluye:
-- Login con Keycloak (SSO)
-- Gestión de sesión con expiración real
-- Perfil de usuario dinámico
-- Tema claro / oscuro
-- Persistencia de preferencias por usuario
-- Control de estado de sesión (activo / inactivo)
-- Detección de conexión online/offline
-- UI tipo dashboard moderno
+
+- 🔐 Login con Keycloak (SSO)
+- 👤 Gestión de sesión con expiración
+- 📊 Dashboard de usuario dinámico
+- 🌙 Tema claro / oscuro
+- 💾 Persistencia de preferencias por usuario
+- 🟢 Estado de sesión activo / inactivo
+- 🌐 Detección de conexión online / offline
+- 🎨 UI tipo dashboard moderno
 
 ---
 
-## 🚀 Tecnologías utilizadas
+# 🚀 Tecnologías utilizadas
 
 - Flask (Python)
 - Keycloak (OAuth2 / OpenID Connect)
 - JavaScript Vanilla
 - HTML5 + CSS3
-- LocalStorage (preferencias de usuario)
+- LocalStorage
 
 ---
 
-## ⚙️ Requisitos
+# ⚙️ Requisitos
 
 - Python 3.10+
-- Keycloak en ejecución (localhost:8080)
-- Realm configurado
-- Cliente creado en Keycloak
+- Keycloak ejecutándose en `http://localhost:8080`
+- Docker (opcional, recomendado)
+- Realm configurado en Keycloak
 
 ---
 
-## 🔧 Configuración Keycloak
+# 🐳 Levantar Keycloak
 
-Debes configurar en Keycloak:
-
-- Realm: `mi-realm`
-- Client ID: `cliente`
-- Access Type: `public` o `confidential`
-- Valid Redirect URIs:
+```bash
+docker run -p 8080:8080 \
+  -e KEYCLOAK_ADMIN=admin \
+  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak:latest start-dev
