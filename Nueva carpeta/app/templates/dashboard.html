@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='flask_img.ico') }}">
     <title></title>
 </head>
 <body>
@@ -32,7 +33,7 @@
             <div class="notification-wrapper">
                 <button id="bellBtn" class="bell-btn">
                     🔔
-                    <span id="notificationCount">0</span>
+                    <span id="notificationCount">!</span>
                 </button>
             </div>
             <button id="themeToggle" class="theme-btn" title="Cambiar tema">🌙</button>
@@ -107,6 +108,10 @@
                 <div class="row">
                     <span class="label">Email verificado</span>
                     <span id="emailVerified">-</span>
+                </div>
+                <div class="row">
+                    <span class="label">Direccion IP</span>
+                    <span id="ipDirection">{{ ip }}</span>
                 </div>
             </div>
         </div>
