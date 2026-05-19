@@ -66,10 +66,7 @@ function loadUserProfile() {
     document.title = `${greeting}, ${name}`;
 
     // último login
-    const loginTimestamp =
-        token.auth_time ||
-        token.iat ||
-        null;
+    const loginTimestamp = token.auth_time;
 
     const loginEl = document.getElementById("loginTime");
 
@@ -130,6 +127,13 @@ function loadUserProfile() {
             ? roles.join(", ")
             : "N/A"
     );
+
+    // Direccion IP
+    fetch('/api/ip')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("ipDirection").textContent = data.ip;
+        });
 
     // avatar
     setAvatar(name);
