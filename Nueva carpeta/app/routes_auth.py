@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, url_for, session, render_template
 from datetime import timedelta
 from app.extensions import oauth
+from flask import request
 
 auth = Blueprint("auth", __name__)
 
@@ -19,7 +20,6 @@ keycloak = oauth.register(
         "scope": "openid profile email"
     }
 )
-
 
 # 🏠 HOME
 @auth.route("/")
@@ -66,9 +66,12 @@ def dashboard():
     if "user" not in session:
         return redirect(url_for("auth.login"))
 
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+
     return render_template(
         "dashboard.html",
-        user=session["user"]
+        user=session["user"],
+        ip=ip
     )
 
 
@@ -83,4 +86,5 @@ def logout():
         "?redirect_uri=http://localhost:5000/"
     )
 
-    return redirect(logout_url)
+    return redirect(logout_url) 
+

@@ -10,6 +10,7 @@ def create_app():
     app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
     SESSION_COOKIE_SECURE=False
+
 )
 
     from .routes_auth import auth
