@@ -22,6 +22,8 @@ Incluye:
 - JavaScript Vanilla
 - HTML5 + CSS3
 - LocalStorage
+- Git
+- Yaml
 
 ---
 
