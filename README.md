@@ -15,7 +15,7 @@ Incluye:
 
 ---
 
-# 🚀 Tecnologías utilizadas
+# Tecnologías utilizadas
 
 - Flask (Python)
 - Keycloak (OAuth2 / OpenID Connect)
