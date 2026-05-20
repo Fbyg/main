@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='flask_img.ico') }}">
     <title></title>
 </head>
+
 <body>
     <!-- Titulo de bienvenida -->
     <div class="welcome-header">
@@ -52,7 +53,7 @@
     <!-- Overlay de sin conexión y restauración -->
     <div id="offlineOverlay" class="hidden">
         <div class="offline-box">
-            <h2 style="color: white;">Sin conexión</h2>
+            <h2 style="color: white;">No tienes conexión</h2>
             <p style="color: white;">La aplicación está pausada hasta recuperar internet.</p>
         </div>
     </div>
@@ -117,7 +118,7 @@
                     <span class="label">Memory usage</span>
                     <span class="value" id="memoryUsage"></span>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -129,5 +130,22 @@
     <script src="{{ url_for('static', filename='js/session.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
     <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    <script>
+        console.log(
+            "%c!DETENTE!",
+            "color: red; font-size: 30px; font-weight: bold; padding: 10px;"
+        );
+
+        console.log(
+            "%cEste código fuente tiene derechos de autor.",
+            "color: orange; font-size: 16px;"
+        );
+
+        console.log(
+            "%cCopiarlo seria un delito",
+            "color: orange; font-size: 16px;"
+        )
+    </script>
 </body>
-</html> 
+
+</html>
