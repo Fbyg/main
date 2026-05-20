@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, url_for, session, render_template
 from datetime import timedelta
 from app.extensions import oauth
+import psutil
 from flask import request
 
 auth = Blueprint("auth", __name__)
@@ -88,3 +89,22 @@ def logout():
 
     return redirect(logout_url) 
 
+@auth.route("/api/ip")
+def api_ip():
+    ip = request.headers.get("X-Forwarded-For")
+    if ip:
+        ip = ip.split(",")[0].strip()
+    else:
+        ip = request.remote_addr
+
+    return {"ip": ip}
+
+
+@auth.route("/api/memory")
+def memory():
+    import psutil, os
+
+    process = psutil.Process(os.getpid())
+    mem_mb = process.memory_info().rss / 1024 / 1024
+
+    return {"memory_mb": round(mem_mb, 2)}
