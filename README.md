@@ -1,4 +1,4 @@
-#Dashboard con Keycloak + Flask
+## Dashboard con Keycloak + Flask
 
 Este proyecto es un dashboard de usuario desarrollado con Flask y JavaScript Vanilla, utilizando autenticación basada en Keycloak mediante OAuth2 / OpenID Connect.
 
@@ -6,7 +6,7 @@ Permite iniciar sesión mediante SSO, gestionar sesiones activas y personalizar 
 
 ---
 
-##Funcionalidades
+## Funcionalidades
 
 - Login con Keycloak (SSO)
 - Gestión de sesión con expiración automática
@@ -21,7 +21,7 @@ Permite iniciar sesión mediante SSO, gestionar sesiones activas y personalizar 
 
 ---
 
-##Nuevas funcionalidades añadidas
+## Nuevas funcionalidades añadidas
 
 - Validación de usuarios registrados
 - Aplicación de cupones de descuento
