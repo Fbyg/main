@@ -11,14 +11,13 @@ function initAuth(onSuccess) {
     keycloak.init({
         onLoad: "check-sso",
         pkceMethod: "S256",
-        checkLoginIframe: false
+        checkLoginIframe: true
     }).then((authenticated) => {
 
         loader.style.display = "none";
 
         if (!authenticated) {
             console.log("No autenticado");
-            keycloak.login()
             return;
         }
 
