@@ -1,42 +1,70 @@
-# 🔐 Dashboard con Keycloak + Flask
+#Dashboard con Keycloak + Flask
 
-Este proyecto es un dashboard de usuario con autenticación basada en **Keycloak**, backend en **Flask** y frontend en **JavaScript vanilla**.
+Este proyecto es un dashboard de usuario desarrollado con Flask y JavaScript Vanilla, utilizando autenticación basada en Keycloak mediante OAuth2 / OpenID Connect.
 
-Incluye:
-
-- 🔐 Login con Keycloak (SSO)
-- 👤 Gestión de sesión con expiración
-- 📊 Dashboard de usuario dinámico
-- 🌙 Tema claro / oscuro
-- 💾 Persistencia de preferencias por usuario
-- 🟢 Estado de sesión activo / inactivo
-- 🌐 Detección de conexión online / offline
-- 🎨 UI tipo dashboard moderno
+Permite iniciar sesión mediante SSO, gestionar sesiones activas y personalizar la experiencia del usuario con una interfaz moderna tipo dashboard.
 
 ---
 
-# Tecnologías utilizadas
+##Funcionalidades
 
-- Flask (Python)
+- Login con Keycloak (SSO)
+- Gestión de sesión con expiración automática
+- Dashboard dinámico de usuario
+- Cambio entre tema claro y oscuro
+- Persistencia de preferencias por usuario
+- Estado de sesión activo / inactivo
+- Detección de conexión online / offline
+- Interfaz moderna estilo dashboard
+- Gestión automática del estado de autenticación
+- Diseño responsive adaptable
+
+---
+
+##Nuevas funcionalidades añadidas
+
+- Validación de usuarios registrados
+- Aplicación de cupones de descuento
+- Generación automática de tickets en PDF
+- Selección entre vaso pequeño o grande
+- Confirmación antes de procesar acciones importantes
+- Mejoras visuales y optimización de experiencia de usuario
+
+---
+
+## Errores corregidos
+
+- Corregido el error al generar pedidos
+- Solucionado el bug de selección de bebidas
+- Mejorada la estabilidad de sesión
+- Optimización de validaciones de autenticación
+
+---
+
+## Tecnologías utilizadas
+
+- Python + Flask
 - Keycloak (OAuth2 / OpenID Connect)
 - JavaScript Vanilla
 - HTML5 + CSS3
 - LocalStorage
+- YAML
 - Git
-- Yaml
+- Docker
 
 ---
 
-# ⚙️ Requisitos
+## Requisitos
 
-- Python 3.10+
+- Python 3.10 o superior
 - Keycloak ejecutándose en `http://localhost:8080`
 - Docker (opcional, recomendado)
 - Realm configurado en Keycloak
+- Navegador moderno compatible con ES6
 
 ---
 
-# 🐳 Levantar Keycloak
+## Levantar Keycloak
 
 ```bash
 docker run -p 8080:8080 \
