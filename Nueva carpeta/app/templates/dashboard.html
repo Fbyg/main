@@ -65,7 +65,7 @@
 
     <!-- grid principal con información del usuario y del dispositivo -->
     <div class="grid">
-        <div class="card" title="Informacion del usuario">
+        <div class="card">
             <h3>👤 Información del usuario</h3>
             <div class="info">
                 <div class="row">
@@ -85,45 +85,49 @@
                     <span class="label">Rol</span>
                     <span class="value" id="roleValue">-</span>
                 </div>
+                <div class="row">
+                    <span class="label">Direccion IP</span>
+                    <span class="value" id="ipDirection">{{ip}}</span>
+                </div>
             </div>
         </div>
 
-        <div class="card" title="Informacion de la sesion">
+        <div class="card">
             <h3>🔐 Informacion de la sesión</h3>
             <div class="info">
                 <div class="row">
                     <span class="label">Estado de sesión</span>
-                    <span id="status">-</span>
+                    <span class="value" id="status">-</span>
                 </div>
 
                 <div class="row">
                     <span class="label">Tiempo restante</span>
-                    <span id="sessionTime">-</span>
+                    <span class="value" id="sessionTime">-</span>
                 </div>
 
                 <div class="row">
                     <span class="label">Último inicio</span>
-                    <span id="loginTime">-</span>
+                    <span class="value" id="loginTime">-</span>
                 </div>
                 <div class="row">
                     <span class="label">Email verificado</span>
-                    <span id="emailVerified">-</span>
+                    <span class="value" id="emailVerified">-</span>
                 </div>
                 <div class="row">
-                    <span class="label">Direccion IP</span>
-                    <span id="ipDirection">{{ ip }}</span>
+                    <span class="label">Memory usage</span>
+                    <span class="value" id="memoryUsage"></span>
                 </div>
+                
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/keycloak-js@latest/dist/keycloak.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/connect.js') }}"></script>
     <script src="{{ url_for('static', filename='js/preferences.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
     <script src="{{ url_for('static', filename='js/user.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/session.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/connect.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
-
-</html>
+</html> 
