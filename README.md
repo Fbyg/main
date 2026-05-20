@@ -22,20 +22,11 @@ Permite iniciar sesión mediante SSO, gestionar sesiones activas y personalizar 
 ---
 
 ## Nuevas funcionalidades añadidas
-
-- Validación de usuarios registrados
-- Aplicación de cupones de descuento
-- Generación automática de tickets en PDF
-- Selección entre vaso pequeño o grande
-- Confirmación antes de procesar acciones importantes
 - Mejoras visuales y optimización de experiencia de usuario
 
 ---
 
 ## Errores corregidos
-
-- Corregido el error al generar pedidos
-- Solucionado el bug de selección de bebidas
 - Mejorada la estabilidad de sesión
 - Optimización de validaciones de autenticación
 
