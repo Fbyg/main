@@ -30,6 +30,8 @@ function initAuth(onSuccess) {
 
         const prefs = getUserPreferences();
 
+        const btn = document.getElementById("themeToggle")
+
         if (prefs.theme === "dark") {
             document.body.classList.add("dark");
             btn.textContent = "☀️";

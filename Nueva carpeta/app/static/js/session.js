@@ -85,6 +85,7 @@ function clearAllIntervals() {
 
 function startSessionTimers() {
 
+    clearAllIntervals();
     sessionStatusInterval = setInterval(updateSessionStatus, 10000);
     sessionTimeInterval = setInterval(updateSessionTime, 1000);
 }
@@ -111,6 +112,9 @@ function initReloginButton() {
    KEYCLOAK EVENTO EXPIRACIÓN
 ========================= */
 
-keycloak.onTokenExpired = () => {
-    showExpiredSession();
-};
+function initSessionEvents() {
+
+    keycloak.onTokenExpired = () => {
+        showExpiredSession();
+    };
+}

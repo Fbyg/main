@@ -130,11 +130,24 @@ function loadUserProfile() {
 
     // Direccion IP
     fetch('/api/ip')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error("IP request failed");
+            return r.json();
+        })
         .then(data => {
-            document.getElementById("ipDirection").textContent = data.ip;
+            const el = document.getElementById("ipDirection");
+            if (el) el.textContent = data?.ip ?? "N/A";
+        })
+        .catch(err => {
+            console.warn("IP fetch error:", err);
         });
 
+    fetch("/api/memory")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("memoryUsage").textContent =
+                `${data.memory_mb} MB`;
+        });
     // avatar
     setAvatar(name);
     console.log(keycloak.tokenParsed);
