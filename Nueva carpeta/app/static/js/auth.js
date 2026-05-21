@@ -1,53 +1,59 @@
 const keycloak = new Keycloak({
-    url: "http://localhost:8080",
-    realm: "mi-realm",
+    url: "http://localhost:8080", // 🔥 IMPORTANTE
+    realm: "prueba",
     clientId: "cliente"
 });
+let authInitialized = false;
 
-function initAuth(onSuccess) {
+function initAuth(onSuccess, onNotAuth) {
 
     const loader = document.getElementById("loader");
 
     keycloak.init({
-        onLoad: "check-sso",
+        onLoad: "login-required",
         pkceMethod: "S256",
-        checkLoginIframe: true
+        checkLoginIframe: false
     }).then((authenticated) => {
 
-        loader.style.display = "none";
+        loader && (loader.style.display = "none");
 
         if (!authenticated) {
-            console.log("No autenticado");
+            console.warn("[AUTH] No autenticado");
+
+            if (typeof onNotAuth === "function") {
+                onNotAuth();
+            }
+
             return;
         }
 
-        const tokenData = keycloak.tokenParsed;
-        const token = keycloak.token;
+        if (authInitialized) return;
+        authInitialized = true;
 
-        loadUserProfile();
-        startSessionTimers();
-        initReloginButton();
-
-        const prefs = getUserPreferences();
-
-        const btn = document.getElementById("themeToggle")
-
-        if (prefs.theme === "dark") {
-            document.body.classList.add("dark");
-            btn.textContent = "☀️";
-        } else {
-            document.body.classList.remove("dark");
-            btn.textContent = "🌙";
+        if (typeof onSuccess === "function") {
+            onSuccess();
         }
 
         updateSessionStatus();
         updateSessionTime();
 
-        sessionStatusInterval = setInterval(updateSessionStatus, 10000);
-        sessionTimeInterval = setInterval(updateSessionTime, 1000);
+        console.log("[AUTH] sesión iniciada");
 
     }).catch(err => {
-        console.error("Keycloak init error", err);
+        console.error("[AUTH] Keycloak error", err);
     });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+
+    const btn = document.getElementById("logout");
+
+    if (!btn) return;
+
+    btn.addEventListener("click", () => {
+        keycloak.logout({
+            redirectUri: "http://localhost:5000/login"
+        });
+    });
+
+});

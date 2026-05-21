@@ -32,29 +32,32 @@ function setAvatar(name) {
 
 function loadUserProfile() {
 
+    // 🔐 seguridad base
+    if (!keycloak?.authenticated || !keycloak?.tokenParsed) {
+        console.warn("[USER] no autenticado");
+        return;
+    }
+
     const token = keycloak.tokenParsed;
 
-    if (!token) return;
+    const safe = (v) => v ?? "N/A";
 
-    const email = token.email || "N/A";
-    const username = token.preferred_username || "N/A";
-    const name = token.given_name || token.name || "N/A";
+    const email = safe(token.email);
+    const username = safe(token.preferred_username);
+    const name = safe(token.given_name || token.name);
 
-    // helper
     const set = (id, value) => {
-        const el = document.getElementById(id);
 
-        if (el) {
-            el.textContent = value;
-        }
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
     };
 
-    // info usuario
+    // 👤 usuario
     set("emailValue", email);
     set("userValue", username);
     set("nameValue", name);
 
-    // saludo
+    // 🧠 saludo
     const greeting = getGreeting();
 
     const welcome = document.getElementById("welcomeTittle");
@@ -65,53 +68,34 @@ function loadUserProfile() {
 
     document.title = `${greeting}, ${name}`;
 
-    // último login
-    const loginTimestamp = token.auth_time;
-
+    // 🕒 login
     const loginEl = document.getElementById("loginTime");
 
     if (loginEl) {
 
-        if (!loginTimestamp) {
+        const ts = token.auth_time;
 
-            loginEl.textContent = "No disponible";
-
-        } else {
-
-            const loginDate = new Date(loginTimestamp * 1000);
-
-            loginEl.textContent =
-                loginDate.toLocaleString("es-ES", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-        }
+        loginEl.textContent = ts
+            ? new Date(ts * 1000).toLocaleString("es-ES")
+            : "No disponible";
     }
 
-    // email verificado
-    const emailVerified = token.email_verified;
-
+    // 📧 email verificado
     const emailVerifiedEl =
         document.getElementById("emailVerified");
 
     if (emailVerifiedEl) {
 
+        const verified = !!token.email_verified;
+
         emailVerifiedEl.textContent =
-            emailVerified
-                ? "✔ Sí"
-                : "❌ No";
+            verified ? "✔ Sí" : "❌ No";
 
         emailVerifiedEl.style.color =
-            emailVerified
-                ? "#2ecc71"
-                : "#ff4d4d";
+            verified ? "#2ecc71" : "#ff4d4d";
     }
 
-    // roles
+    // 🔐 roles seguros
     const ignoredRoles = [
         "offline_access",
         "uma_authorization",
@@ -119,36 +103,57 @@ function loadUserProfile() {
     ];
 
     const roles = (token.realm_access?.roles || [])
-        .filter(role => !ignoredRoles.includes(role));
+        .filter(r => !ignoredRoles.includes(r));
 
-    set(
-        "roleValue",
-        roles.length
-            ? roles.join(", ")
-            : "N/A"
+    set("roleValue",
+        roles.length ? roles.join(", ") : "N/A"
     );
 
-    // Direccion IP
-    fetch('/api/ip')
-        .then(r => {
-            if (!r.ok) throw new Error("IP request failed");
-            return r.json();
-        })
-        .then(data => {
-            const el = document.getElementById("ipDirection");
-            if (el) el.textContent = data?.ip ?? "N/A";
-        })
-        .catch(err => {
-            console.warn("IP fetch error:", err);
-        });
+    // 🌐 IP (con seguridad añadida)
+    fetch("/api/ip", {
+        headers: {
+            Authorization: `Bearer ${keycloak.token}`
+        }
+    })
+    .then(r => {
 
-    fetch("/api/memory")
-        .then(r => r.json())
-        .then(data => {
-            document.getElementById("memoryUsage").textContent =
-                `${data.memory_mb} MB`;
-        });
-    // avatar
-    setAvatar(name);
-    console.log(keycloak.tokenParsed);
+        if (!r.ok) throw new Error("IP request failed");
+        return r.json();
+    })
+    .then(data => {
+
+        const el = document.getElementById("ipDirection");
+        if (el) el.textContent = data?.ip ?? "N/A";
+    })
+    .catch(err => {
+        console.warn("IP fetch error:", err);
+    });
+
+    // 🧠 memoria (protegido)
+    fetch("/api/memory", {
+        headers: {
+            Authorization: `Bearer ${keycloak.token}`
+        }
+    })
+    .then(r => {
+
+        if (!r.ok) throw new Error("Memory request failed");
+        return r.json();
+    })
+    .then(data => {
+
+        const el = document.getElementById("memoryUsage");
+        if (el) el.textContent = `${data.memory_mb} MB`;
+    })
+    .catch(err => {
+        console.warn("Memory fetch error:", err);
+    });
+
+    // 🧑 avatar seguro
+    if (typeof setAvatar === "function") {
+        setAvatar(name);
+    }
+
+    console.log("[USER] profile loaded");
 }
+

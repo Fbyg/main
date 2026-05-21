@@ -2,13 +2,13 @@ let sessionStatusInterval;
 let sessionTimeInterval;
 let sessionExpired = false;
 
-/* =========================
-   ESTADO DE SESIÓN
-========================= */
+function getTokenSafe() {
+    return keycloak?.tokenParsed || null;
+}
 
 function updateSessionStatus() {
 
-    const token = keycloak.tokenParsed;
+    const token = getTokenSafe();
     const status = document.getElementById("status");
 
     if (!token || !keycloak.authenticated) {
@@ -18,7 +18,8 @@ function updateSessionStatus() {
     }
 
     const now = Math.floor(Date.now() / 1000);
-    const isActive = token.exp > now;
+
+    const isActive = token.exp && token.exp > now;
 
     status.textContent = isActive ? "🟢 Activa" : "🔴 Inactiva";
     status.style.color = isActive ? "green" : "red";
@@ -28,16 +29,16 @@ function updateSessionStatus() {
     }
 }
 
-/* =========================
-   TIEMPO RESTANTE
-========================= */
-
 function updateSessionTime() {
 
-    const token = keycloak.tokenParsed;
+    const token = getTokenSafe();
     if (!token || sessionExpired) return;
 
-    const diff = token.exp * 1000 - Date.now();
+    const exp = Number(token.exp);
+
+    if (!exp) return showExpiredSession();
+
+    const diff = exp * 1000 - Date.now();
 
     if (diff <= 0) {
         showExpiredSession();
@@ -47,13 +48,9 @@ function updateSessionTime() {
     const minutes = Math.floor(diff / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
 
-    document.getElementById("sessionTime").textContent =
-        `${minutes}m ${seconds}s`;
+    const el = document.getElementById("sessionTime");
+    if (el) el.textContent = `${minutes}m ${seconds}s`;
 }
-
-/* =========================
-   EXPIRACIÓN DE SESIÓN
-========================= */
 
 function showExpiredSession() {
 
@@ -62,59 +59,36 @@ function showExpiredSession() {
 
     clearAllIntervals();
 
+    try {
+        keycloak.clearToken();
+    } catch (e) {
+        console.warn("[SESSION] clearToken failed", e);
+    }
+
     const overlay = document.getElementById("expiredOverlay");
-    overlay.classList.remove("hidden");
+
+    if (overlay) overlay.classList.remove("hidden");
 
     document.body.style.pointerEvents = "none";
-    overlay.style.pointerEvents = "all";
 }
 
-/* =========================
-   LIMPIAR INTERVALOS
-========================= */
-
-function clearAllIntervals() {
-
-    if (sessionStatusInterval) clearInterval(sessionStatusInterval);
-    if (sessionTimeInterval) clearInterval(sessionTimeInterval);
-}
-
-/* =========================
-   INICIAR TIMERS
-========================= */
+let sessionIntervals = [];
 
 function startSessionTimers() {
 
     clearAllIntervals();
-    sessionStatusInterval = setInterval(updateSessionStatus, 10000);
-    sessionTimeInterval = setInterval(updateSessionTime, 1000);
+
+    const interval = setInterval(() => {
+
+        updateSessionStatus();
+        updateSessionTime();
+
+    }, 1000);
+
+    sessionIntervals.push(interval);
 }
 
-/* =========================
-   BOTÓN RELOGIN
-========================= */
-
-function initReloginButton() {
-
-    const btn = document.getElementById("reloginBtn");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-        keycloak.login({
-            redirectUri: window.location.origin,
-            prompt: "login"
-        });
-    });
-}
-
-/* =========================
-   KEYCLOAK EVENTO EXPIRACIÓN
-========================= */
-
-function initSessionEvents() {
-
-    keycloak.onTokenExpired = () => {
-        showExpiredSession();
-    };
+function clearAllIntervals() {
+    sessionIntervals.forEach(clearInterval);
+    sessionIntervals = [];
 }

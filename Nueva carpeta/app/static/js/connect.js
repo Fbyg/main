@@ -26,15 +26,19 @@ window.addEventListener("offline", () => {
 });
 
 window.addEventListener("online", async () => {
-    // primero restauras UI SIEMPRE
+
     resumeApp();
     showOnlinePopup();
 
-    // luego validas token (opcional)
     try {
-        await keycloak.updateToken(5);
+
+        if (keycloak?.authenticated) {
+            await keycloak.updateToken(10);
+        }
+
     } catch (e) {
-        console.warn("Token inválido tras reconexión");
+
+        console.warn("[CONNECT] token inválido tras reconexión");
         keycloak.login();
     }
 });

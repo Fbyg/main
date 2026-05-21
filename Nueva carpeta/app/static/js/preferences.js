@@ -3,23 +3,16 @@ function getCurrentUser() {
 }
 
 function getUserPreferences() {
-    const username = getCurrentUser();
 
+    const username = getCurrentUser();
     const saved = localStorage.getItem(`prefs_${username}`);
 
-    return saved
-        ? JSON.parse(saved)
-        : {
-            theme: "light",
-            notifications: true
-        };
-}
-
-function saveUserPreferences(preferences) {
-    const username = getCurrentUser();
-
-    localStorage.setItem(
-        `prefs_${username}`,
-        JSON.stringify(preferences)
-    );
+    try {
+        return saved
+            ? JSON.parse(saved)
+            : { theme: "light", notifications: true };
+    } catch (e) {
+        console.warn("[PREFS] corrupt data reset");
+        return { theme: "light", notifications: true };
+    }
 }
