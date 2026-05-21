@@ -14,9 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             updateSessionStatus();
-            updateSessionTime();
-
-            startSessionTimers();
+            startSessionTimers()
         },
         () => {
 

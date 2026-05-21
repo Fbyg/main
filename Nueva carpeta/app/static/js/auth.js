@@ -35,7 +35,7 @@ function initAuth(onSuccess, onNotAuth) {
         }
 
         updateSessionStatus();
-        updateSessionTime();
+        startSessionTimers()
 
         console.log("[AUTH] sesión iniciada");
 
