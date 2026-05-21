@@ -30,7 +30,6 @@
             <a href="#">Inicio</a>
             <a id="profileBtn" title="Ver perfil">Perfil</a>
             <a id="configBtn" title="Configuración">Configuración</a>
-            <a href="/logout" title="Cerrar sesión">Cerrar sesión</a>
             <div class="notification-wrapper">
                 <button id="bellBtn" class="bell-btn">
                     🔔
@@ -122,6 +121,10 @@
             </div>
         </div>
     </div>
+    <div class="container">
+        <button id="logout">Cerrar sesión</button>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/keycloak-js@latest/dist/keycloak.min.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
@@ -133,7 +136,7 @@
     <script>
         console.log(
             "%c!DETENTE!",
-            "color: red; font-size: 30px; font-weight: bold; padding: 10px;"
+            "color: red; font-size: 45px; font-weight: bold; padding: 10px;"
         );
 
         console.log(
