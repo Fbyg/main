@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, url_for, session, render_template
 from datetime import timedelta
+import os
 from app.extensions import oauth
 import psutil
 from flask import request
@@ -16,7 +17,7 @@ keycloak = oauth.register(
     name="keycloak",
     client_id="cliente",
     client_secret="YOUR_CLIENT_SECRET",
-    server_metadata_url="http://localhost:8080/realms/mi-realm/.well-known/openid-configuration",
+    server_metadata_url = "http://localhost:8080/realms/prueba/.well-known/openid-configuration",
     client_kwargs={
         "scope": "openid profile email"
     }
@@ -47,6 +48,8 @@ def callback():
     if not userinfo:
         return redirect("/login")
 
+    session.clear()  # 🔥 FIX SESSION FIXATION
+
     session.permanent = True
 
     session["user"] = {
@@ -56,6 +59,8 @@ def callback():
         "name": userinfo.get("name"),
         "roles": userinfo.get("realm_access", {}).get("roles", [])
     }
+    session["id_token"] = token.get("id_token")
+    session["access_token"] = token.get("access_token")
 
     return redirect(url_for("auth.dashboard"))
 
@@ -80,29 +85,41 @@ def dashboard():
 @auth.route("/logout")
 def logout():
 
+    id_token = session.get("id_token")
+        
+    if not id_token:
+         return redirect("/")
+
     session.clear()
 
-    logout_url = (
-        "http://localhost:8080/realms/mi-realm/protocol/openid-connect/logout"
-        "?redirect_uri=http://localhost:5000/"
-    )
+    return redirect(
+    "http://localhost:8080/realms/prueba/protocol/openid-connect/logout"
+    "?post_logout_redirect_uri=http://localhost:5000/"
+)
 
-    return redirect(logout_url) 
+    
+def require_login():
+    if "user" not in session:
+        return False
+    return True
+
 
 @auth.route("/api/ip")
 def api_ip():
-    ip = request.headers.get("X-Forwarded-For")
-    if ip:
-        ip = ip.split(",")[0].strip()
-    else:
-        ip = request.remote_addr
+
+    if not require_login():
+        return {"error": "unauthorized"}, 401
+
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
 
     return {"ip": ip}
 
 
 @auth.route("/api/memory")
 def memory():
-    import psutil, os
+
+    if "user" not in session:
+        return {"error": "unauthorized"}, 401
 
     process = psutil.Process(os.getpid())
     mem_mb = process.memory_info().rss / 1024 / 1024
