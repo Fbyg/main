@@ -1,6 +1,7 @@
 version: "3.9"
 
 services:
+
   mysql:
     image: mysql:8.0
     container_name: mysql_server
@@ -17,12 +18,15 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak_server
     command: start-dev
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql
 
 volumes:
   mysql_data:
