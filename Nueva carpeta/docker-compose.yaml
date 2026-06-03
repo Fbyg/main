@@ -1,13 +1,10 @@
-version: "3.9"
-
 services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql_server
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
       MYSQL_USER: keycloak
       MYSQL_PASSWORD: keycloak
@@ -18,25 +15,28 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak_server
     command: start-dev
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-
-      # 🔥 conexión a MySQL
       KC_DB: mysql
       KC_DB_URL: jdbc:mysql://mysql:3306/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
 
-      # importante para dev local
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME: 10.10.88.5
       KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
 
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql
+
+  flask:
+    build: .
+    ports:
+      - "5000:5000"
     depends_on:
       - mysql
 
