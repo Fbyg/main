@@ -109,10 +109,9 @@
 <body>
 
     <button id="themeToggle" class="theme-btn">🌙</button>
-    <div class="login-box">
-        <h2>Iniciar sesión con Keycloak</h2>
-        <button class="boton-elegante" onclick="keycloak.login()">Iniciar sesión</button>
-    </div>
+    <button class="boton-elegante" onclick="window.location.href='http://10.10.88.5:5000/login'">
+        Iniciar sesión
+    </button>
     <script>
         const btn = document.getElementById("themeToggle");
         btn.addEventListener("click", () => {
