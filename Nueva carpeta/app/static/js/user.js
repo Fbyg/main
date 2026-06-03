@@ -109,7 +109,6 @@ function loadUserProfile() {
         roles.length ? roles.join(", ") : "N/A"
     );
 
-    // 🌐 IP (con seguridad añadida)
     fetch("/api/ip", {
         headers: {
             Authorization: `Bearer ${keycloak.token}`
@@ -129,7 +128,6 @@ function loadUserProfile() {
         console.warn("IP fetch error:", err);
     });
 
-    // 🧠 memoria (protegido)
     fetch("/api/memory", {
         headers: {
             Authorization: `Bearer ${keycloak.token}`
